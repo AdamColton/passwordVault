@@ -15,3 +15,10 @@ I store my passwords on a thumbdrive I keep on my keychain. I keep a local copy 
 Source and Optimised
 --------------------
 I had some fun trying to make the file as small as possible. By combining the JavaScript, CSS and HTML into single file and compressing it, the applicaiton is easier to deploy and takes up a neglegible amount of space by almost any definition.
+
+Todo
+----
+* Fix Chrome CSS bug
+* After selecting a site, automatically highlight password
+* add generate password button
+* [optional] multi-key entry
