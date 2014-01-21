@@ -21,4 +21,5 @@ Todo
 * Fix Chrome CSS bug
 * After selecting a site, automatically highlight password
 * add generate password button
+* move "locked" to top of file
 * [optional] multi-key entry
