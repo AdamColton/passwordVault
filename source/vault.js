@@ -25,7 +25,7 @@ var Vault = {
     siteData: "<div><label>&nbsp;</label>&nbsp;<span id='siteLink'></span></div><div><label>Username:</label>&nbsp;{username}</div><div id='hiddenPassword'><label>Password:</label><button id='selectPassword'>Select</button><span class='password' id='password'>{password}</span></div><div id='plainTextPassword'><label>Password:</label>&nbsp;{password}</div><div><label>Email:</label>&nbsp;{email}</div><div><label>Notes:</label>&nbsp;{notes}</div><div><label>&nbsp;</label></div><div><button id='edit'>Edit</button></div><div><label>&nbsp;</label><button id='showPassword'>Show Password</button><button id='hidePassword'>Hide Password</button></div><div><label>&nbsp;</label><button id='delete'>Delete</button></div></div>",
     lockedSiteData: "<div><label>&nbsp;</label>&nbsp;<span id='siteLink'></span></div><div><label>Username:</label>&nbsp;{username}</div><div id='hiddenPassword'><label>Password:</label><button id='selectPassword'>Select</button><span class='password' id='password'>{password}</span></div><div id='plainTextPassword'><label>Password:</label>&nbsp;{password}</div><div><label>Email:</label>&nbsp;{email}</div><div><label>Notes:</label>&nbsp;{notes}</div><div><label>&nbsp;</label><button id='showPassword'>Show Password</button><button id='hidePassword'>Hide Password</button></div></div>",
     siteLink: "<a href='{link}' target='_blank'>Link</a>",
-    editSiteForm: "<div><label for='siteName'>Site</label><input type='text' id='siteName' value='{site}' /><input type='hidden' id='originalSite' value='{site}' /></div><div><label for='link'>Link</label><input type='text' id='link' value='{link}' /></div><div><label for='username'>Username</label><input type='text' id='username' value='{username}' /></div><div><label for='password'>Password</label><input type='password' id='password' value='{password}' /></div><div><label>&nbsp;</label>Leave password blank to generate random</div><div><label for='email'>Email</label><input type='text' id='email' value='{email}' /></div><div><label for='notes'>Notes</label><textarea id='notes'>{notes}</textarea></div><div><label>&nbsp;</label><button id='saveNew'>Save</button></div>",
+    editSiteForm: "<div><label for='siteName'>Site</label><input type='text' id='siteName' value='{site}' /><input type='hidden' id='originalSite' value='{site}' /></div><div><label for='link'>Link</label><input type='text' id='link' value='{link}' /></div><div><label for='username'>Username</label><input type='text' id='username' value='{username}' /></div><div><label for='password'>Password</label><input type='password' id='password' value='{password}' /></div><div><label>&nbsp;</label><button id='generate' class='short'>Random</button><button id='showHide' class='short'>Show</button><button id='select' class='short'>Select</button><span id='hiddenPassword' class='password'></span></div><div><label for='email'>Email</label><input type='text' id='email' value='{email}' /></div><div><label for='notes'>Notes</label><textarea id='notes'>{notes}</textarea></div><div><label>&nbsp;</label><button id='saveNew'>Save</button></div>",
     siteOption: "<option>{siteName}</option>",
     saveForm: "<div><label>1: </label><a href='{link}'>Right Click</a> -&gt; 'Save as'</div><div><label>2: </label>Save as 'vault.txt'</div><div><label>3: </label><button id='saved'>Done</button></div>",
     build: function(template, data){
@@ -80,7 +80,7 @@ var Vault = {
     },
     newSiteForm: function(){
       $("siteData").innerHTML = Vault.templates.build("editSiteForm", {});
-      $("saveNew").onclick = Vault.saveSite;
+      Vault.setupEditForm();
     },
     save: function(){
       var enc = 'data:text/plain,' + escape('var vault="' + GibberishAES.enc(JSON.stringify(Vault.decrypted), Vault.key).replace(/\n/g,"")) +'", locked = false;';
@@ -116,7 +116,7 @@ var Vault = {
     },
     editSite: function(){
       $("siteData").innerHTML = Vault.templates.build("editSiteForm", Vault.decrypted[$("siteSelect").value]);
-      $("saveNew").onclick = Vault.saveSite;
+      Vault.setupEditForm();
     }
   },
   decryptVault: function(){
@@ -189,6 +189,13 @@ var Vault = {
     $("showPassword").style.display = "inline";
     $("hidePassword").style.display = "none";
   },
+  setupEditForm: function(){
+    $("generate").onclick = Vault.populatePassword;
+    $("showHide").onclick = Vault.editShowHide;
+    $("password").onkeyup = Vault.updateHiddenPassword;
+    $("select").onclick = function(){ Vault.fnSelect("hiddenPassword"); };
+    $("saveNew").onclick = Vault.saveSite;
+  },
   selectPassword: function(){
     Vault.fnSelect("password");
   },
@@ -203,6 +210,22 @@ var Vault = {
       randomPassword += chars[ Math.floor(Math.random()*chars.length)];
     }
     return randomPassword;
+  },
+  populatePassword: function(){
+    $("password").value = Vault.generatePassword();
+    $("hiddenPassword").innerHTML = $("password").value;
+  },
+  editShowHide: function(){
+    if ($("showHide").innerHTML === "Show"){
+      $("showHide").innerHTML = "Hide";
+      $("password").type = "text";
+    } else {
+      $("showHide").innerHTML = "Show";
+      $("password").type = "password";
+    }
+  },
+  updateHiddenPassword: function(){
+    $("hiddenPassword").innerHTML = $("password").value;
   },
   esc: function(s){
     var escape = [
