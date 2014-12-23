@@ -101,7 +101,7 @@ var Vault = {
       Vault.setupEditForm();
     },
     save: function(){
-      var enc = 'data:text/plain,' + escape('var vault="' + GibberishAES.enc(JSON.stringify(Vault.decrypted), Vault.key).replace(/\n/g,"")) +'", locked = false;';
+      var enc = 'data:text/plain,' + escape('var locked = false, vault="' + GibberishAES.enc(JSON.stringify(Vault.decrypted), Vault.key).replace(/\n/g,"")) +'";';
       $("container").innerHTML = Vault.templates.build("saveForm", {"link": enc});
       $("saved").onclick = Vault.show.siteSelector;
     },
@@ -124,6 +124,7 @@ var Vault = {
         if (Vault.decrypted[site].link != ""){
           $("siteLink").innerHTML = Vault.templates.build("siteLink", {"link": Vault.addhttp(Vault.decrypted[site].link)});
         }
+        Vault.selectPassword();
         $("selectPassword").onclick = Vault.selectPassword;
         $("showPassword").onclick = Vault.showPassword;
         $("hidePassword").onclick = Vault.hidePassword;
